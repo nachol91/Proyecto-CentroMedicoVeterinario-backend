@@ -1,0 +1,32 @@
+{
+  "name": "centromedicoveterinario-backend",
+  "version": "0.0.1",
+  "description": "Backend del proyecto final de rolling sobre un centro medico veterinario donde se realizan diagnosticos por imagenes ",
+  "homepage": "https://github.com/nachol91/Proyecto-CentroMedicoVeterinario-backend#readme",
+  "bugs": {
+    "url": "https://github.com/nachol91/Proyecto-CentroMedicoVeterinario-backend/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nachol91/Proyecto-CentroMedicoVeterinario-backend.git"
+  },
+  "license": "MIT",
+  "author": "Nacho, Facu, Gonza",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node --watch --env-file=.env index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "cloudinary": "^2.9.0",
+    "cors": "^2.8.6",
+    "dotenv": "^17.3.1",
+    "express": "^5.2.1",
+    "express-validator": "^7.3.1",
+    "jsonwebtoken": "^9.0.3",
+    "mongoose": "^9.2.2"
+  }
+}
