@@ -6,7 +6,7 @@ const UsuarioSchema = Schema({
     correo: {type: String, required:[true, "el correo es obligatorio"], unique: true},
     telefono: {type: Number, required:[true, "el telefono es obligario"]},
     password: {type: String, required:[true, "el password es obligatorio"]},
-    rol: {type: String, required:[true, "el rol es obligatorio"]},
+    nivel: {type: String, required:[true, "el rol es obligatorio"]},
     img: {type: String},
     fechaRegistro: {type: Date, default: Date.now},
     estado: {type: Boolean, default: true}
