@@ -32,9 +32,10 @@ const usuarioGetID = async (req = request, res = response) =>{
 
 const usuarioPost = async ( req = request, res = response) =>{
     const datos = req.body;
-
-    const { nombre, apellido, correo, telefono, password, rol } = datos;
-    const usuario = new Usuario({ nombre, apellido, correo, telefono, password, rol });
+    
+    const { nombre, apellido, correo, telefono, password, nivel } = datos;
+    
+    const usuario = new Usuario({ nombre, apellido, correo, telefono, password, nivel });
 
     //encriptacion de password//
     const salt = bcrypt.genSaltSync(10);
@@ -57,7 +58,7 @@ const usuarioPut = async ( req = request, res = response ) =>{
     //encriptacion de password si es que se modifica//
     if(password){
         const salt = bcrypt.genSaltSync(10);
-        const hash = bcrypt.hashSync(password, salt);
+        resto.password = bcrypt.hashSync(password, salt);
     }
 
     //modificacion de los otros datos//
