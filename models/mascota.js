@@ -9,6 +9,7 @@ const MascotaSchema = Schema({
     img: {type: String},
     fechaRegistro: {type: Date, default: Date.now},
     usuario: {type: Schema.Types.ObjectId, ref: "Usuario", required: true, unique: true},
+    estado: {type: Boolean, default: true}
 
 });
 

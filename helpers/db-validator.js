@@ -15,6 +15,8 @@ const emailExiste = async(correo) =>{
 //validacion de Rol//
 
 const rolExiste = async(nivel) =>{
+    const nivelMays = nivel.toUpperCase();
+    nivel = nivelMays
     const existeRol = await Rol.findOne({nivel});
     if(!existeRol){
         throw new Error(`El rol ${nivel} no se encuentra en la base de datos`);
@@ -42,7 +44,12 @@ const usuarioExiste = async(id) =>{
 
 //validacion de existencia de mascota//
 
-
+const mascotaExiste = async(id) =>{
+    const existeMascota = await Mascota.findById(id);
+    if(!existeMascota){
+        throw new Error(`el id ${id} no corresponde a ninguna mascota de la base de datos`)
+    }
+}
 
 
 
@@ -53,5 +60,6 @@ module.exports = {
     emailExiste,
     rolExiste,
     usuarioExiste,
+    mascotaExiste,
     nivelExiste
 }
