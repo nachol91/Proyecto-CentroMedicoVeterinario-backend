@@ -33,9 +33,11 @@ const usuarioGetID = async (req = request, res = response) =>{
 const usuarioPost = async ( req = request, res = response) =>{
     const datos = req.body;
     
-    const { nombre, apellido, correo, telefono, password, nivel } = datos;
+    const { nombre, apellido, correo, telefono, password } = datos;
     
-    const usuario = new Usuario({ nombre, apellido, correo, telefono, password, nivel });
+    const nivelMays = datos.nivel.toUpperCase();
+    
+    const usuario = new Usuario({ nombre, apellido, correo, telefono, password, nivel:nivelMays });
 
     //encriptacion de password//
     const salt = bcrypt.genSaltSync(10);
