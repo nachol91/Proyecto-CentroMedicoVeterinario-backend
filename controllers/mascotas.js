@@ -61,6 +61,7 @@ const mascotaPost = async ( req = request, res = response) =>{
 };
 
 const habilitarMascota = async ( req = request, res = response) =>{
+    
     const {id} = req.params;
 
     try {
@@ -79,7 +80,7 @@ const habilitarMascota = async ( req = request, res = response) =>{
         });
 
     } catch (error) {
-        res.status(200).json({
+        res.status(500).json({
             msg: "error al procesar la solicitud"
         })
     }
@@ -93,7 +94,7 @@ const mascotaPut = async ( req = request, res = response) =>{
     resto.peso = peso;
     resto.historiaClinica = historiaClinica;
 
-    const mascota = await Mascota.FindByIdAndUpdate(id, resto, {new: true});
+    const mascota = await Mascota.findByIdAndUpdate(id, resto, {new: true});
 
     res.json({
         msg: "mascota actualizada con exito!",
@@ -104,7 +105,9 @@ const mascotaPut = async ( req = request, res = response) =>{
 const mascotaDelete = async ( req = request, res = response) =>{
     const {id} = req.params;
 
-    const mascotaBorrada = await Mascota.FindByIdAndDelete(id);
+    const mascotaBorrada = await Mascota.findByIdAndDelete(id);
+
+    // console.log(mascotaBorrada);//
 
     res.json({
         msg: "Mascota borrada con exito",
