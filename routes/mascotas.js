@@ -34,7 +34,7 @@ router.post("/", [
 router.put("/:id", [
     validarJWT,
     esAdminRole,
-    check("id", "el id no es valido").isMongoId,
+    check("id", "el id no es valido").isMongoId(),
     check("id").custom(mascotaExiste),
     validarCampos
 ], mascotaPut);
@@ -42,15 +42,16 @@ router.put("/:id", [
 router.patch("/:id", [
     validarJWT,
     esAdminRole,
-    check("id", "el id no es valido").isMongoId,
+    check("id", "el id no es valido").isMongoId(),
     check("id").custom(mascotaExiste),
     validarCampos
 ], habilitarMascota);
 
+
 router.delete("/:id", [
     validarJWT,
     esAdminRole,
-    check("id", "el id no es valido").isMongoId,
+    check("id", "el id no es valido").isMongoId(),
     check("id").custom(mascotaExiste),
     validarCampos
 ], mascotaDelete);
