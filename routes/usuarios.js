@@ -22,6 +22,8 @@ router.get("/:id", [
 ], usuarioGetID);
 
 router.post("/", [
+    validarJWT,
+    esAdminRole,
     check("nombre", "el nombre es obligatorio").notEmpty(),
     check("apellido", "el apellido es obligatorio").notEmpty(),
     check("telefono", "el telefono es obligatorio").notEmpty(),
