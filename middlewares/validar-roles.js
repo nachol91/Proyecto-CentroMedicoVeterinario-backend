@@ -18,6 +18,26 @@ const esAdminRole = ( req = request, res = response, next ) =>{
     next();
 };
 
+
+const esRolValido = (...niveles) => {
+    return (req = request, res = response, next) =>{
+        if(!req.usuario){
+            return res.status(500).json({
+                msg: "es necesario esta logueado"
+            })
+        }
+
+        if(!niveles.includes(req.usuario.nivel)){
+            return res.status(401).json({
+                msg: "rol no valido para realizar esta accion!"
+            })
+        }
+
+        next();
+    }
+}
+
 module.exports = {
-    esAdminRole
+    esAdminRole,
+    esRolValido
 }

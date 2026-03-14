@@ -4,11 +4,11 @@ const cloudinary = require("cloudinary").v2;
 
 const mascotasGet = async ( req=request, res=response ) =>{
     const {desde = 0, limite = 10} = req.query;
-    const query = {estado: true};
+    const query = {};
 
     const [total, mascotas] = await Promise.all([
         Mascota.countDocuments(query),
-        Mascota.find(query).skip(desde).limit(limite).populate("usuario", "correo"),
+        Mascota.find(query).skip(desde).limit(limite).populate("dueno", "nombre apellido telefono").populate("medicoQueCrea", "nombre apellido")
     ]);
 
     res.json({
@@ -16,23 +16,24 @@ const mascotasGet = async ( req=request, res=response ) =>{
         total,
         mascotas,
     });
+};
 
-}
-
-const mascotasGetID = async ( req = request, res = response ) =>{
-    const {id} = req.params;
-
-    const mascota = await Mascota.findById(id).populate("usuario", "correo");
+const mascotasGetIdDueno = async ( req = request, res = response ) =>{
+    const {idDueno} = req.params;
+    
+    const mascotas = await Mascota.find({dueno: idDueno}).populate("medicoQueCrea", "Nombre apellido");
 
     res.json({
-        msg: "mascota obtenida",
-        mascota
-    });
+        msg: "mascotas obtenidas",
+        mascotas
+    });    
 };
 
 const mascotaPost = async ( req = request, res = response) =>{
-    const { especie, raza, peso, historiaClinica, img } = req.body;
+    const { raza, edad, peso, dueno, historiaClinica, img } = req.body;
     const nombre = req.body.nombre.toUpperCase();
+    const especie = req.body.especie.toUpperCase();
+    const sexo = req.body.sexo.toUpperCase();
 
     //imagen de perfil de la mascota en cloudinary//
     const imagen = async (img) =>{
@@ -46,7 +47,9 @@ const mascotaPost = async ( req = request, res = response) =>{
 
     const imgId = await imagen(img);
 
-    const data = { nombre, especie, raza, peso, historiaClinica, img: imgId, usuario: req.usuario._id };
+    const medicoQueCrea = req.usuario._id
+
+    const data = { nombre, especie, raza, edad, peso, sexo, historiaClinica, img: imgId,  medicoQueCrea, dueno};
 
     const mascota = new Mascota(data);
 
@@ -55,8 +58,7 @@ const mascotaPost = async ( req = request, res = response) =>{
     res.status(201).json({
         msg: "macota creada correctamente.",
         mascota
-    })
-
+    });
 
 };
 
@@ -89,16 +91,29 @@ const habilitarMascota = async ( req = request, res = response) =>{
 const mascotaPut = async ( req = request, res = response) =>{
     const{id} = req.params;
 
-    const { peso, historiaClinica, ...resto } = req.body;
+    const { peso, NuevaHistoriaClinica } = req.body;
 
-    resto.peso = peso;
-    resto.historiaClinica = historiaClinica;
+    const mascotaSelect = await Mascota.findById(id);
 
-    const mascota = await Mascota.findByIdAndUpdate(id, resto, {new: true});
+    let historiaActualizada = mascotaSelect.historiaClinica;
+
+    if(NuevaHistoriaClinica){
+        const fecha = new Date().toLocaleDateString('es-AR');
+        
+        const { nombre, apellido } = req.usuario;
+
+        const medicoQueAtiende = `${nombre} ${apellido}`;
+
+        const nuevaHistoria = `\n[${fecha}] - Médico: ${medicoQueAtiende}\nNota: ${NuevaHistoriaClinica}\n${'-'.repeat(20)}`;
+
+        historiaActualizada += nuevaHistoria
+    }
+   
+    const mascotaActualizada = await Mascota.findByIdAndUpdate(id, { peso: peso || mascotaSelect.peso, historiaClinica: historiaActualizada }, {new: true});
 
     res.json({
-        msg: "mascota actualizada con exito!",
-        mascota
+        msg: "registro actualizado con exito!",
+        mascotaActualizada
     })
 }
 
@@ -117,7 +132,7 @@ const mascotaDelete = async ( req = request, res = response) =>{
 
 module.exports = {
     mascotasGet,
-    mascotasGetID,
+    mascotasGetIdDueno,
     mascotaPost,
     habilitarMascota,
     mascotaPut,
