@@ -2,14 +2,17 @@ const {Schema, model} = require("mongoose");
 
 const MascotaSchema = Schema({
     nombre: {type: String, required:[true, "el nombre es obligatorio"]}, 
-    especie: {type: String, required:[true, "la especie del animal es obligatoria"]}, 
-    raza: {type: String, required:[true, "la raza es obligatoria"]}, 
+    especie: {type: String, enum:["CANINO", "FELINO", "OTRO"], required:[true, "la especie del animal es obligatoria"]}, 
+    raza: {type: String, default: "mestizo"},
+    edad: {type: Number, required:[true, "la edad es obligatoria"]},
+    sexo: {type: String, enum: ["MACHO", "HEMBRA"], required:[true, "el sexo es obligatorio"]},
     peso: {type: String, required:[true, "el peso es obligatorio"]},
-    historiaClinica: {type: String, required:[true, "la historia clinica es obligatoria"]},
     img: {type: String},
-    fechaRegistro: {type: Date, default: Date.now},
-    usuario: {type: Schema.Types.ObjectId, ref: "Usuario", required: true},
-    estado: {type: Boolean, default: true}
+    estado: {type: Boolean, default: true},
+    medicoQueCrea: {type: Schema.Types.ObjectId, ref: "Usuario", required: true},
+    dueno: {type: Schema.Types.ObjectId, ref: "Usuario", required: true},
+    historiaClinica: {type: String, default: ""},
+    fechaRegistro: {type: Date, default: Date.now}
 
 });
 
