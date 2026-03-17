@@ -21,7 +21,7 @@ const mascotasGet = async ( req=request, res=response ) =>{
 const mascotasGetIdDueno = async ( req = request, res = response ) =>{
     const {idDueno} = req.params;
     
-    const mascotas = await Mascota.find({dueno: idDueno}).populate("medicoQueCrea", "Nombre apellido");
+    const mascotas = await Mascota.find({dueno: idDueno}).populate("medicoQueCrea", "nombre apellido");
 
     res.json({
         msg: "mascotas obtenidas",
@@ -30,10 +30,23 @@ const mascotasGetIdDueno = async ( req = request, res = response ) =>{
 };
 
 const mascotaPost = async ( req = request, res = response) =>{
-    const { raza, edad, peso, dueno, historiaClinica, img } = req.body;
+    const { edad, peso, dueno, historiaClinica, img } = req.body;
     const nombre = req.body.nombre.toUpperCase();
     const especie = req.body.especie.toUpperCase();
     const sexo = req.body.sexo.toUpperCase();
+    const raza = req.body.raza.toUpperCase();
+
+    //formateo de la historia clinica//
+
+    let historiaFormateada = "";
+    if (historiaClinica) {
+        const fecha = new Date().toLocaleDateString('es-AR');
+        const { nombre: nombreMedico, apellido: apellidoMedico } = req.usuario; 
+        const medicoQueAtiende = `${nombreMedico} ${apellidoMedico}`
+
+        historiaFormateada = `[${fecha}] - Médico: ${medicoQueAtiende}\nNota: ${historiaClinica}\n${'-'.repeat(20)}`;
+    }
+
 
     //imagen de perfil de la mascota en cloudinary//
     const imagen = async (img) =>{
@@ -49,7 +62,7 @@ const mascotaPost = async ( req = request, res = response) =>{
 
     const medicoQueCrea = req.usuario._id
 
-    const data = { nombre, especie, raza, edad, peso, sexo, historiaClinica, img: imgId,  medicoQueCrea, dueno};
+    const data = { nombre, especie, raza, edad, peso, sexo, historiaClinica: historiaFormateada, img: imgId,  medicoQueCrea, dueno};
 
     const mascota = new Mascota(data);
 
@@ -91,7 +104,7 @@ const habilitarMascota = async ( req = request, res = response) =>{
 const mascotaPut = async ( req = request, res = response) =>{
     const{id} = req.params;
 
-    const { peso, NuevaHistoriaClinica } = req.body;
+    const { peso, NuevaHistoriaClinica, edad } = req.body;
 
     const mascotaSelect = await Mascota.findById(id);
 
@@ -109,7 +122,7 @@ const mascotaPut = async ( req = request, res = response) =>{
         historiaActualizada += nuevaHistoria
     }
    
-    const mascotaActualizada = await Mascota.findByIdAndUpdate(id, { peso: peso || mascotaSelect.peso, historiaClinica: historiaActualizada }, {new: true});
+    const mascotaActualizada = await Mascota.findByIdAndUpdate(id, { peso: peso || mascotaSelect.peso, historiaClinica: historiaActualizada, edad: edad || mascotaSelect.edad }, {new: true});
 
     res.json({
         msg: "registro actualizado con exito!",

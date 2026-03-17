@@ -1,7 +1,7 @@
 const { Router } = require("express");
 const { check } = require("express-validator");
 const { validarCampos } = require("../middlewares/validar-campos");
-const { mascotaExiste } = require("../helpers/db-validator");
+const { mascotaExiste, usuarioExiste } = require("../helpers/db-validator");
 const { esRolValido } = require("../middlewares/validar-roles");
 const { mascotasGet, mascotaPost, mascotaPut, habilitarMascota, mascotaDelete, mascotasGetIdDueno } = require("../controllers/mascotas");
 const { validarJWT } = require("../middlewares/validar-jwt");
@@ -13,11 +13,11 @@ router.get("/", [
     esRolValido("ADMIN", "MEDICO")
 ], mascotasGet);
 
-router.get("/:id", [
+router.get("/:idDueno", [
     validarJWT,
     esRolValido("ADMIN", "MEDICO"),
-    check("id", "el id no es valido").isMongoId(),
-    check("id").custom(mascotaExiste),
+    check("idDueno", "el id del dueño no es valido").isMongoId(),
+    check("idDueno").custom(usuarioExiste),
     validarCampos
 ], mascotasGetIdDueno);
 
