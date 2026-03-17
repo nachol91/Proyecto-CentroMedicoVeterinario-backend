@@ -6,7 +6,7 @@ const MascotaSchema = Schema({
     raza: {type: String, default: "mestizo"},
     edad: {type: Number, required:[true, "la edad es obligatoria"]},
     sexo: {type: String, enum: ["MACHO", "HEMBRA"], required:[true, "el sexo es obligatorio"]},
-    peso: {type: String, required:[true, "el peso es obligatorio"]},
+    peso: {type: Number, required:[true, "el peso es obligatorio"]},
     img: {type: String},
     estado: {type: Boolean, default: true},
     medicoQueCrea: {type: Schema.Types.ObjectId, ref: "Usuario", required: true},
