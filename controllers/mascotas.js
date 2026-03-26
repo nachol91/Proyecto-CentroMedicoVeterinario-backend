@@ -3,12 +3,12 @@ const Mascota = require("../models/mascota");
 const cloudinary = require("cloudinary").v2;
 
 const mascotasGet = async ( req=request, res=response ) =>{
-    const {desde = 0, limite = 10} = req.query;
+    const {desde = 0, limite = 20} = req.query;
     const query = {};
 
     const [total, mascotas] = await Promise.all([
         Mascota.countDocuments(query),
-        Mascota.find(query).skip(desde).limit(limite).populate("dueno", "nombre apellido telefono").populate("medicoQueCrea", "nombre apellido")
+        Mascota.find(query).skip(desde).limit(limite).populate("dueno", "nombre apellido telefono correo").populate("medicoQueCrea", "nombre apellido")
     ]);
 
     res.json({

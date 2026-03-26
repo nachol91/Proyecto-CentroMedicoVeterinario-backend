@@ -10,6 +10,7 @@ class Server{
         this.mascotasPath = "/api/mascotas";
         this.usuariosPath = "/api/usuarios";
         this.rolesPath = "/api/roles";
+        this.turnosPath = "/api/turnos";
 
         //Contectar a la base de datos//
         
@@ -44,6 +45,7 @@ class Server{
         this.app.use(this.mascotasPath, require("../routes/mascotas"));
         this.app.use(this.usuariosPath, require("../routes/usuarios"));
         this.app.use(this.rolesPath, require("../routes/roles"));
+        this.app.use(this.turnosPath, require("../routes/turnos"));
     };
 
     listen(){

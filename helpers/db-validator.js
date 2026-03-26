@@ -1,6 +1,8 @@
 const Usuario = require("../models/usuario");
-const Rol = require("../models/rol");
 const Mascota = require("../models/mascota");
+const Rol = require("../models/rol");
+const Turno = require("../models/turno");
+
 
 //validacion de email//
 
@@ -57,10 +59,20 @@ const mascotaExiste = async (id) => {
   }
 };
 
+const turnoExiste = async(id) => {
+  const existeTurno = await Turno.findById(id);
+  if(!existeTurno) {
+    throw new Error(
+      `el id ${id} no corresponde a ningun turno registrado en el sistema`,
+    );
+  }
+};
+
 module.exports = {
   emailExiste,
   rolExiste,
+  nivelExiste,
   usuarioExiste,
   mascotaExiste,
-  nivelExiste,
+  turnoExiste
 };
