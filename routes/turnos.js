@@ -3,8 +3,8 @@ const { check } = require("express-validator");
 const { validarCampos } = require("../middlewares/validar-campos");
 const { validarJWT } = require("../middlewares/validar-jwt");
 const { esRolValido } = require("../middlewares/validar-roles");
-const { usuarioExiste, mascotaExiste, turnoExiste } = require("../helpers/db-validator");
-const { turnosGet, turnoPost, turnoPut, turnoDelete, turnoPatch } = require("../controllers/turnos");
+const { turnoExiste } = require("../helpers/db-validator");
+const { turnosGet, turnoPost, turnoPut, turnoDelete, turnoPatch, turnosGetIdDueno } = require("../controllers/turnos");
 
 
 const router = Router();
@@ -13,6 +13,13 @@ router.get("/",[
     validarJWT,
     esRolValido("ADMIN", "MEDICO")
 ], turnosGet);
+
+router.get("/:idDueno", [
+    validarJWT,
+    esRolValido("ADMIN", "MEDICO", "USER"),
+    check("idDueno", "No es un ID válido").isMongoId(),
+    validarCampos
+], turnosGetIdDueno);
 
 router.post("/",[
     validarJWT,

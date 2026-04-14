@@ -21,7 +21,7 @@ const usuariosGet = async (req = request, res = response) => {
 const usuarioGetID = async (req = request, res = response) => {
   const { id } = req.params;
 
-  const usuario = await Usuario.findById(id);
+  const usuario = await Usuario.findById(id).populate("mascotas");
 
   res.json({
     msg: "Usuario obtenido",
