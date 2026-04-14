@@ -105,14 +105,13 @@ const usuarioInhabilitado = async (req = request, res = response) => {
   const { id } = req.params;
 
   try {
-    const usuario = await Usuario.findById(id);
+    const usuarioActual = await Usuario.findById(id);
 
-    if (!usuario) {
+    if (!usuarioActual) {
       return res.status(400).json({ msg: "no se encontro el usuario" });
     }
 
-    usuario.estado = !usuario.estado;
-    await usuario.save();
+    const usuario = await Usuario.findByIdAndUpdate(id, { estado: !usuarioActual.estado }, { new: true });
 
     res.json({
       msg: `Usuario ${usuario.estado ? "habilitado" : "deshabilitado"} correctamente.`,
