@@ -15,7 +15,7 @@ router.get("/", [
 
 router.get("/:idDueno", [
     validarJWT,
-    esRolValido("ADMIN", "MEDICO"),
+    esRolValido("ADMIN", "MEDICO","USER"),
     check("idDueno", "el id del dueño no es valido").isMongoId(),
     check("idDueno").custom(usuarioExiste),
     validarCampos

@@ -7,7 +7,7 @@ const UsuarioSchema = Schema({
     telefono: {type: String, required:[true, "el telefono es obligario"]},
     password: {type: String, required:[true, "el password es obligatorio"]},
     nivel: {type: String, required:[true, "el rol es obligatorio"]},
-    mascotas: {type: Array},
+    mascotas: {type: Schema.Types.ObjectId, ref: "Mascota"},
     img: {type: String},
     fechaRegistro: {type: Date, default: Date.now},
     estado: {type: Boolean, default: true}

@@ -24,6 +24,25 @@ const turnosGet = async (req =  request, res = response) =>{
     }
 };
 
+const turnosGetIdDueno = async (req = request, res = response) => {
+    const { idDueno } = req.params;
+
+    try {
+        const turnos = await Turno.find({ dueno: idDueno })
+            .populate('medico', 'nombre apellido')
+            .populate('mascota', 'nombre especie')
+            .sort({ fecha: 1 });
+
+        res.json({
+            msg: "Turnos obtenidos",
+            turnos
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ msg: "Error al obtener los turnos del usuario" });
+    }
+};
+
 const turnoPost = async (req = request, res = response) =>{
     const { fecha, tipoDeEstudio, descripcion, dueno, mascota, medico } = req.body;
 
@@ -115,7 +134,6 @@ const turnoPatch = async (req = request, res = response) =>{
     }
 };
 
-
 const turnoDelete = async (req = request, res = response) =>{
     const {id} = req.params;
 
@@ -129,6 +147,7 @@ const turnoDelete = async (req = request, res = response) =>{
 
 module.exports = {
     turnosGet,
+    turnosGetIdDueno,
     turnoPost,
     turnoPut,
     turnoPatch,
