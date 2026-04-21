@@ -19,7 +19,6 @@ const turnosGet = async (req =  request, res = response) =>{
         res.json({total, turnos});
         
     } catch (error) {
-        console.log(error);
         res.status(500).json({msg: "error al obtener los turnos"});        
     }
 };
@@ -38,7 +37,6 @@ const turnosGetIdDueno = async (req = request, res = response) => {
             turnos
         });
     } catch (error) {
-        console.log(error);
         res.status(500).json({ msg: "Error al obtener los turnos del usuario" });
     }
 };
@@ -80,7 +78,6 @@ const turnoPost = async (req = request, res = response) =>{
         });
         
     } catch (error) {
-        console.log(error);
         res.status(500).json({msg:"error al crear el turno, hable con el ADMIN"})        
     }
 };
@@ -108,7 +105,6 @@ const turnoPut = async (req = request, res = response) => {
         });
 
     } catch (error) {
-        console.log(error);
         res.status(500).json({ msg: "Error al editar el turno" });
     }
 };
@@ -129,7 +125,6 @@ const turnoPatch = async (req = request, res = response) =>{
             turnoActualizado
         });
     } catch (error) {
-        console.error(error);
         res.status(500).json({ msg: "Error al finalizar la atención" });
     }
 };

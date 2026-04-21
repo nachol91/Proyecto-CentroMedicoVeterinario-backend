@@ -54,7 +54,7 @@ const mascotaPost = async ( req = request, res = response) =>{
             const resultado = await cloudinary.uploader.upload(img);
             return resultado.secure_url;  
         } catch (error) {
-            console.error(error)
+            throw error;
         }
     };
 
@@ -134,8 +134,6 @@ const mascotaDelete = async ( req = request, res = response) =>{
     const {id} = req.params;
 
     const mascotaBorrada = await Mascota.findByIdAndDelete(id);
-
-    // console.log(mascotaBorrada);//
 
     res.json({
         msg: "Mascota borrada con exito",

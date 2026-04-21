@@ -75,9 +75,7 @@ const usuarioPut = async (req = request, res = response) => {
         usuarioDB.password,
       );
       if (!validarPass) {
-        return res
-          .status(401)
-          .json({ msg: "La contraseña actual es incorrecta" });
+        return res.status(401).json({ msg: "La contraseña actual es incorrecta" });
       }
     }
 
@@ -96,7 +94,6 @@ const usuarioPut = async (req = request, res = response) => {
       usuario: usuarioActualizado,
     });
   } catch (error) {
-    console.log(error);
     res.status(500).json({ msg: "Error interno, hable con el administrador" });
   }
 };
