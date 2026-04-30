@@ -11,7 +11,7 @@ class Server{
         this.usuariosPath = "/api/usuarios";
         this.rolesPath = "/api/roles";
         this.turnosPath = "/api/turnos";
-        this.recetasPath = "/api/recetas";
+        
         
         this.conectarDB();
 
@@ -39,7 +39,7 @@ class Server{
         this.app.use(this.usuariosPath, require("../routes/usuarios"));
         this.app.use(this.rolesPath, require("../routes/roles"));
         this.app.use(this.turnosPath, require("../routes/turnos"));
-        this.app.use(this.recetasPath, require("../routes/recetas"));
+        
     };
 
     listen(){
