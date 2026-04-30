@@ -6,73 +6,80 @@ const mascotasGet = async ( req=request, res=response ) =>{
     const {desde = 0, limite = 20} = req.query;
     const query = {};
 
-    const [total, mascotas] = await Promise.all([
-        Mascota.countDocuments(query),
-        Mascota.find(query).skip(desde).limit(limite).populate("dueno", "nombre apellido telefono correo").populate("medicoQueCrea", "nombre apellido")
-    ]);
+    try {
+        const [total, mascotas] = await Promise.all([
+            Mascota.countDocuments(query),
+            Mascota.find(query).skip(desde).limit(limite).populate("dueno", "nombre apellido telefono correo").populate("medicoQueCrea", "nombre apellido")
+        ]);
 
-    res.json({
-        msg: "mascotas obtenidas",
-        total,
-        mascotas,
-    });
+        res.json({
+            msg: "mascotas obtenidas",
+            total,
+            mascotas,
+        });
+    } catch (error) {
+        res.status(500).json({msg: "Error al procesar la solicitud"});
+    }; 
 };
 
 const mascotasGetIdDueno = async ( req = request, res = response ) =>{
     const {idDueno} = req.params;
     
-    const mascotas = await Mascota.find({dueno: idDueno}).populate("medicoQueCrea", "nombre apellido");
+    try {
+       const mascotas = await Mascota.find({dueno: idDueno}).populate("medicoQueCrea", "nombre apellido");
 
-    res.json({
-        msg: "mascotas obtenidas",
-        mascotas
-    });    
+        res.json({
+            msg: "mascotas obtenidas",
+            mascotas
+        });     
+    } catch (error) {
+        res.status(500).json({msg: "Error al procesar la solicitud"});
+    }    
 };
 
 const mascotaPost = async ( req = request, res = response) =>{
     const { edad, peso, dueno, historiaClinica, img } = req.body;
-    const nombre = req.body.nombre.toUpperCase();
-    const especie = req.body.especie.toUpperCase();
-    const sexo = req.body.sexo.toUpperCase();
-    const raza = req.body.raza.toUpperCase();
 
-    //formateo de la historia clinica//
+    try {
+        const nombre = req.body.nombre.toUpperCase();
+        const especie = req.body.especie.toUpperCase();
+        const sexo = req.body.sexo.toUpperCase();
+        const raza = req.body.raza.toUpperCase();
 
-    let historiaFormateada = "";
-    if (historiaClinica) {
-        const fecha = new Date().toLocaleDateString('es-AR');
-        const { nombre: nombreMedico, apellido: apellidoMedico } = req.usuario; 
-        const medicoQueAtiende = `${nombreMedico} ${apellidoMedico}`
+        let historiaFormateada = "";
+        if (historiaClinica) {
+            const fecha = new Date().toLocaleDateString('es-AR');
+            const { nombre: nombreMedico, apellido: apellidoMedico } = req.usuario; 
+            const medicoQueAtiende = `${nombreMedico} ${apellidoMedico}`;
+            historiaFormateada = `[${fecha}] - Médico: ${medicoQueAtiende}\nNota: ${historiaClinica}\n${'-'.repeat(20)}`;
+        };
 
-        historiaFormateada = `[${fecha}] - Médico: ${medicoQueAtiende}\nNota: ${historiaClinica}\n${'-'.repeat(20)}`;
-    }
+        const imagen = async (img) =>{
+            try {
+                const resultado = await cloudinary.uploader.upload(img);
+                return resultado.secure_url;  
+            } catch (error) {
+                throw error;
+            }
+        };
 
+        const imgId = await imagen(img);
 
-    //imagen de perfil de la mascota en cloudinary//
-    const imagen = async (img) =>{
-        try {
-            const resultado = await cloudinary.uploader.upload(img);
-            return resultado.secure_url;  
-        } catch (error) {
-            throw error;
-        }
+        const medicoQueCrea = req.usuario._id
+
+        const data = { nombre, especie, raza, edad, peso, sexo, historiaClinica: historiaFormateada, img: imgId,  medicoQueCrea, dueno};
+
+        const mascota = new Mascota(data);
+
+        await mascota.save();
+
+        res.status(201).json({
+            msg: "macota creada correctamente.",
+            mascota
+        });    
+    } catch (error) {
+        res.status(500).json({msg: "Error al procesar la solicitud"});
     };
-
-    const imgId = await imagen(img);
-
-    const medicoQueCrea = req.usuario._id
-
-    const data = { nombre, especie, raza, edad, peso, sexo, historiaClinica: historiaFormateada, img: imgId,  medicoQueCrea, dueno};
-
-    const mascota = new Mascota(data);
-
-    await mascota.save();
-
-    res.status(201).json({
-        msg: "macota creada correctamente.",
-        mascota
-    });
-
 };
 
 const habilitarMascota = async ( req = request, res = response) =>{
@@ -95,50 +102,71 @@ const habilitarMascota = async ( req = request, res = response) =>{
         });
 
     } catch (error) {
-        res.status(500).json({
-            msg: "error al procesar la solicitud"
-        })
-    }
+        res.status(500).json({msg: "error al procesar la solicitud"})
+    };
 };
 
 const mascotaPut = async ( req = request, res = response) =>{
     const{id} = req.params;
-
     const { peso, NuevaHistoriaClinica, edad } = req.body;
 
-    const mascotaSelect = await Mascota.findById(id);
+    try {
+        const mascotaSelect = await Mascota.findById(id);
 
-    let historiaActualizada = mascotaSelect.historiaClinica;
+        let historiaActualizada = mascotaSelect.historiaClinica;
 
-    if(NuevaHistoriaClinica){
-        const fecha = new Date().toLocaleDateString('es-AR');
-        
-        const { nombre, apellido } = req.usuario;
+        if(NuevaHistoriaClinica){
+            const fecha = new Date().toLocaleDateString('es-AR');
+            
+            const { nombre, apellido } = req.usuario;
 
-        const medicoQueAtiende = `${nombre} ${apellido}`;
+            const medicoQueAtiende = `${nombre} ${apellido}`;
 
-        const nuevaHistoria = `\n[${fecha}] - Médico: ${medicoQueAtiende}\nNota: ${NuevaHistoriaClinica}\n${'-'.repeat(20)}`;
+            const nuevaHistoria = `\n[${fecha}] - Médico: ${medicoQueAtiende}\nNota: ${NuevaHistoriaClinica}\n${'-'.repeat(20)}`;
 
-        historiaActualizada += nuevaHistoria
-    }
-   
-    const mascotaActualizada = await Mascota.findByIdAndUpdate(id, { peso: peso || mascotaSelect.peso, historiaClinica: historiaActualizada, edad: edad || mascotaSelect.edad }, {new: true});
+            historiaActualizada += nuevaHistoria
+        };
+    
+        const mascotaActualizada = await Mascota.findByIdAndUpdate(id, { peso: peso || mascotaSelect.peso, historiaClinica: historiaActualizada, edad: edad || mascotaSelect.edad }, {new: true});
 
-    res.json({
-        msg: "registro actualizado con exito!",
-        mascotaActualizada
-    })
-}
+        res.json({
+            msg: "registro actualizado con exito!",
+            mascotaActualizada
+        });    
+    } catch (error) {
+        res.status(500).json({msg: "error al procesar la solicitud"})
+    };    
+};
 
 const mascotaDelete = async ( req = request, res = response) =>{
     const {id} = req.params;
 
-    const mascotaBorrada = await Mascota.findByIdAndDelete(id);
+    try {
+        const mascotaBorrada = await Mascota.findByIdAndDelete(id);
 
-    res.json({
-        msg: "Mascota borrada con exito",
-        mascotaBorrada
-    })
+        res.json({
+            msg: "Mascota borrada con exito",
+            mascotaBorrada
+        });    
+    } catch (error) {
+        res.status(500).json({msg: "error al procesar la solicitud"})  
+    };    
+};
+
+const mascotasGetMisMascotas = async (req = request, res = response) => {
+    const { _id } = req.usuario;
+
+    try {
+        const mascotas = await Mascota.find({ dueno: _id })
+            .populate("medicoQueCrea", "nombre apellido");
+
+        res.json({
+            msg: "Tus mascotas obtenidas con éxito",
+            mascotas
+        });
+    } catch (error) {
+        res.status(500).json({ msg: "Error al obtener tus mascotas" });
+    }
 };
 
 module.exports = {
@@ -147,6 +175,7 @@ module.exports = {
     mascotaPost,
     habilitarMascota,
     mascotaPut,
+    mascotasGetMisMascotas,
     mascotaDelete
 }
-            
+

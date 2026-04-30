@@ -114,8 +114,7 @@ const turnoPatch = async (req = request, res = response) =>{
     const { id } = req.params;
     const { estado } = req.body; 
 
-    try {
-        
+    try {        
         const turnoActualizado = await Turno.findByIdAndUpdate(id, { estado }, { new: true })
         .populate('medico', 'nombre apellido')
         .populate('mascota', 'nombre');
@@ -125,20 +124,41 @@ const turnoPatch = async (req = request, res = response) =>{
             turnoActualizado
         });
     } catch (error) {
-        res.status(500).json({ msg: "Error al finalizar la atención" });
+        res.status(500).json({ msg: "Error al procesar la solicitud" });
     }
 };
 
 const turnoDelete = async (req = request, res = response) =>{
     const {id} = req.params;
+    try {
+        const turnoBorrado = await Turno.findByIdAndDelete(id);
 
-    const turnoBorrado = await Turno.findByIdAndDelete(id);
+        res.json({
+            msg:"turno eliminado con exito",
+            turnoBorrado
+        });    
+    } catch (error) {
+        res.status(500).json({ msg: "Error al procesar la solicitud" });
+    }    
+};
 
-    res.json({
-        msg:"turno eliminado con exito",
-        turnoBorrado
-    })
-}
+const turnosGetMisTurnos = async (req = request, res = response) => {
+    const { _id } = req.usuario; 
+
+    try {
+        const turnos = await Turno.find({ dueno: _id })
+            .populate('medico', 'nombre apellido')
+            .populate('mascota', 'nombre especie')
+            .sort({ fecha: 1 });
+
+        res.json({
+            msg: "Tus turnos obtenidos con éxito",
+            turnos
+        });
+    } catch (error) {
+        res.status(500).json({ msg: "Error al obtener tus turnos" });
+    }
+};
 
 module.exports = {
     turnosGet,
@@ -146,5 +166,7 @@ module.exports = {
     turnoPost,
     turnoPut,
     turnoPatch,
+    turnosGetMisTurnos,
     turnoDelete    
 }
+

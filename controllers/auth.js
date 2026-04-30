@@ -11,20 +11,20 @@ const login =  async ( req = request, res = response ) =>{
 
         if(!usuario){
             return res.status(400).json({
-                msg: "correo o password incorrectos | usuario inexistente" //acordarse de borrar el usuario inexistente, es solo para pruebas//
+                msg: "correo o password incorrectos"
             })
         }        
 
         if(!usuario.estado){
             return res.status(400).json({
-                msg: "correo o password incorrectos | usuario inactivo" //acordarse de borrar el usuario inactivo, es solo para pruebas//
+                msg: "correo o password incorrectos"
             })
         }
 
         const validarPassword = bcrypt.compareSync(password, usuario.password);
         if(!validarPassword){
             return res.status(400).json({
-                msg: "correo o password incorrectos | password incorrecto" //acordarse de borrar el password incorrecto, es solo para pruebas//
+                msg: "correo o password incorrectos -- pasword"
             })
         }
 

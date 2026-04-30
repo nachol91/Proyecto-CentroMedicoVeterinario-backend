@@ -3,9 +3,6 @@ const Mascota = require("../models/mascota");
 const Rol = require("../models/rol");
 const Turno = require("../models/turno");
 
-
-//validacion de email//
-
 const emailExiste = async (correo) => {
   const existeEmail = await Usuario.findOne({ correo });
   if (existeEmail) {
@@ -14,8 +11,6 @@ const emailExiste = async (correo) => {
     );
   }
 };
-
-//validacion de Rol//
 
 const rolExiste = async (nivel) => {
   const nivelMays = nivel.toUpperCase();
@@ -26,8 +21,6 @@ const rolExiste = async (nivel) => {
   }
 };
 
-//validacion de existencia del rol en la base de datos//
-
 const nivelExiste = async (id) => {
   const existeNivel = await Rol.findById(id);
   if (!existeNivel) {
@@ -37,8 +30,6 @@ const nivelExiste = async (id) => {
   }
 };
 
-//validacion de existencia del usuario en la base de datos//
-
 const usuarioExiste = async (id) => {
   const existeUsuario = await Usuario.findById(id);
   if (!existeUsuario) {
@@ -47,8 +38,6 @@ const usuarioExiste = async (id) => {
     );
   }
 };
-
-//validacion de existencia de mascota//
 
 const mascotaExiste = async (id) => {
   const existeMascota = await Mascota.findById(id);
