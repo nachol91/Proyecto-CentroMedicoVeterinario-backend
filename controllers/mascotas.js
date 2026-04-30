@@ -63,11 +63,14 @@ const mascotaPost = async ( req = request, res = response) =>{
             }
         };
 
-        const imgId = await imagen(img);
+        let imgID = "";
+
+        if (img) {imgID = await imagen(img);
+}
 
         const medicoQueCrea = req.usuario._id
 
-        const data = { nombre, especie, raza, edad, peso, sexo, historiaClinica: historiaFormateada, img: imgId,  medicoQueCrea, dueno};
+        const data = { nombre, especie, raza, edad, peso, sexo, historiaClinica: historiaFormateada, img: imgID,  medicoQueCrea, dueno};
 
         const mascota = new Mascota(data);
 
@@ -78,6 +81,7 @@ const mascotaPost = async ( req = request, res = response) =>{
             mascota
         });    
     } catch (error) {
+        console.log(error);
         res.status(500).json({msg: "Error al procesar la solicitud"});
     };
 };
