@@ -6,56 +6,66 @@ const usuariosGet = async (req = request, res = response) => {
   const { desde = 0, limite = 20 } = req.query;
   const query = {};
 
-  const [total, usuarios] = await Promise.all([
-    Usuario.countDocuments(query),
-    Usuario.find(query).skip(desde).limit(limite),
-  ]);
-
-  res.json({
-    msg: "Usuarios Obtenidos",
-    total,
-    usuarios,
-  });
+  try {
+    const [total, usuarios] = await Promise.all([
+      Usuario.countDocuments(query),
+      Usuario.find(query).skip(desde).limit(limite),
+    ]);
+    res.json({
+      msg: "Usuarios Obtenidos",
+      total,
+      usuarios,
+    });    
+  } catch (error) {
+     res.status(500).json({msg: "Error al procesar la solicitud"});
+  } 
 };
 
 const usuarioGetID = async (req = request, res = response) => {
   const { id } = req.params;
+  try {    
+    const usuario = await Usuario.findById(id).populate("mascotas");
 
-  const usuario = await Usuario.findById(id).populate("mascotas");
-
-  res.json({
-    msg: "Usuario obtenido",
-    usuario,
-  });
+    res.json({
+      msg: "Usuario obtenido",
+      usuario,
+  });    
+  } catch (error) {
+    res.status(500).json({ msg: "Error al procesar la solicitud" });
+  }
 };
 
 const usuarioPost = async (req = request, res = response) => {
   const datos = req.body;
 
-  const { nombre, apellido, correo, telefono, password } = datos;
+  try {
+    const { nombre, apellido, correo, telefono, password } = datos;
 
-  const nivelMays = datos.nivel.toUpperCase();
+    const nivelMays = datos.nivel.toUpperCase();
 
-  const usuario = new Usuario({
-    nombre,
-    apellido,
-    correo,
-    telefono,
-    password,
-    nivel: nivelMays,
-  });
+    const usuario = new Usuario({
+      nombre,
+      apellido,
+      correo,
+      telefono,
+      password,
+      nivel: nivelMays,
+    });
 
-  //encriptacion de password//
-  const salt = bcrypt.genSaltSync(10);
-  const hash = bcrypt.hashSync(password, salt);
-  usuario.password = hash;
+    const salt = bcrypt.genSaltSync(10);
+    const hash = bcrypt.hashSync(password, salt);
+    usuario.password = hash;
 
-  await usuario.save();
+    await usuario.save();
 
-  res.json({
-    msg: "usuario creado correctamente",
-    usuario,
-  });
+    res.json({
+      msg: "usuario creado correctamente",
+      usuario,
+    });
+    
+  } catch (error) {
+    res.status(500).json({ msg: "Error al procesar la solicitud, hable con el administrador" });
+  }
 };
 
 const usuarioPut = async (req = request, res = response) => {
@@ -69,11 +79,12 @@ const usuarioPut = async (req = request, res = response) => {
       return res.status(404).json({ msg: "Usuario no encontrado" });
     }
 
+    const dataParaActualizar = {};
+    if (correo) dataParaActualizar.correo = correo;
+    if (telefono) dataParaActualizar.telefono = telefono;
+
     if (passwordActual) {
-      const validarPass = bcrypt.compareSync(
-        passwordActual,
-        usuarioDB.password,
-      );
+      const validarPass = bcrypt.compareSync( passwordActual, usuarioDB.password, );
       if (!validarPass) {
         return res.status(401).json({ msg: "La contraseña actual es incorrecta" });
       }
@@ -81,13 +92,10 @@ const usuarioPut = async (req = request, res = response) => {
 
     if (password && password.length >= 8) {
       const salt = bcrypt.genSaltSync(10);
-      resto.password = bcrypt.hashSync(password, salt);
+      dataParaActualizar.password = bcrypt.hashSync(password, salt);
     }
 
-    resto.correo = correo;
-    resto.telefono = telefono;
-
-    const usuarioActualizado = await Usuario.findByIdAndUpdate(id, resto, {new: true,});
+    const usuarioActualizado = await Usuario.findByIdAndUpdate(id, dataParaActualizar, {new: true,});
 
     res.json({
       msg: "Usuario actualizado correctamente",
@@ -115,21 +123,23 @@ const usuarioInhabilitado = async (req = request, res = response) => {
       usuario,
     });
   } catch (error) {
-    res.status(500).json({
-      msg: "Error al procesar la solicitud",
-    });
+    res.status(500).json({msg: "Error al procesar la solicitud"});
   }
 };
 
 const usuarioDelete = async (req = request, res = response) => {
   const { id } = req.params;
 
-  const usuarioBorrado = await Usuario.findByIdAndDelete(id);
+  try {
+    const usuarioBorrado = await Usuario.findByIdAndDelete(id);
 
-  res.json({
+    res.json({
     msg: "El usuario fue borrado correctamente",
     usuarioBorrado,
-  });
+    });
+  } catch (error) {
+    res.status(500).json({msg: "Error al procesar la solicitud"});
+  }  
 };
 
 module.exports = {

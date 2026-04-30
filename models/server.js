@@ -11,16 +11,11 @@ class Server{
         this.usuariosPath = "/api/usuarios";
         this.rolesPath = "/api/roles";
         this.turnosPath = "/api/turnos";
-
-        //Contectar a la base de datos//
+        this.recetasPath = "/api/recetas";
         
         this.conectarDB();
 
-        //middlewares//
-
-        this.middlewares();
-
-        //funcion rutas//
+        this.middlewares();        
 
         this.routes();
     };
@@ -30,13 +25,11 @@ class Server{
     };
 
     middlewares(){
-        //cors//
-        this.app.use(cors());
-
-        //leer envio por el cuerpo de la peticion //
+        
+        this.app.use(cors({ origin: process.env.FRONTEND_URL, credentials: true }));
+        
         this.app.use(express.json());
-
-        //carpeta publica//
+        
         this.app.use(express.static("public"));
     };
 
@@ -46,6 +39,7 @@ class Server{
         this.app.use(this.usuariosPath, require("../routes/usuarios"));
         this.app.use(this.rolesPath, require("../routes/roles"));
         this.app.use(this.turnosPath, require("../routes/turnos"));
+        this.app.use(this.recetasPath, require("../routes/recetas"));
     };
 
     listen(){

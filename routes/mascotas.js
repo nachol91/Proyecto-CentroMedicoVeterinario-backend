@@ -3,7 +3,7 @@ const { check } = require("express-validator");
 const { validarCampos } = require("../middlewares/validar-campos");
 const { mascotaExiste, usuarioExiste } = require("../helpers/db-validator");
 const { esRolValido } = require("../middlewares/validar-roles");
-const { mascotasGet, mascotaPost, mascotaPut, habilitarMascota, mascotaDelete, mascotasGetIdDueno } = require("../controllers/mascotas");
+const { mascotasGet, mascotaPost, mascotaPut, habilitarMascota, mascotaDelete, mascotasGetIdDueno, mascotasGetMisMascotas } = require("../controllers/mascotas");
 const { validarJWT } = require("../middlewares/validar-jwt");
 
 const router = Router();
@@ -13,9 +13,14 @@ router.get("/", [
     esRolValido("ADMIN", "MEDICO")
 ], mascotasGet);
 
+router.get("/mis-mascotas", [
+    validarJWT,
+    esRolValido("ADMIN", "USER", "MEDICO")
+], mascotasGetMisMascotas);
+
 router.get("/:idDueno", [
     validarJWT,
-    esRolValido("ADMIN", "MEDICO","USER"),
+    esRolValido("ADMIN", "MEDICO"),
     check("idDueno", "el id del dueño no es valido").isMongoId(),
     check("idDueno").custom(usuarioExiste),
     validarCampos
@@ -25,9 +30,13 @@ router.post("/", [
     validarJWT,
     esRolValido("ADMIN", "MEDICO"),
     check("nombre", "El nombre de la mascota es obligatorio").notEmpty(),
-    check("especie", "La especie de la mascota es obligatoria").notEmpty(),
+    check("especie", "La especie es obligatoria").isIn(["CANINO", "FELINO", "OTRO"]),
     check("raza", "La raza de la mascota es obligatoria").notEmpty(),
+    check("edad", "La edad debe ser un número").isNumeric(),
+    check("sexo", "El sexo debe ser Macho o Hembra").isIn(["MACHO", "HEMBRA"]),
     check("peso", "El peso de la mascota es obligatorio").notEmpty(),
+    check("medicoQueCrea", "No es un ID de médico válido").isMongoId(),
+    check("dueno", "El ID del dueño no es válido").isMongoId(),
     validarCampos
 ], mascotaPost);
 
@@ -57,6 +66,7 @@ router.delete("/:id", [
 ], mascotaDelete);
 
 module.exports = router;
+
 
 
 

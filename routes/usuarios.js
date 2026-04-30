@@ -36,6 +36,18 @@ router.put("/:id", [
     validarJWT,
     check("id", "no es un id valido").isMongoId(),
     check("id").custom(usuarioExiste),
+    check("nombre", "El nombre debe ser texto").optional().notEmpty().isString(),
+    check("apellido", "El apellido debe ser texto").optional().notEmpty().isString(),
+    check("correo", "El correo no es válido").optional().isEmail(),
+    check("telefono", "El teléfono es obligatorio").optional().notEmpty(),
+    check("nivel").custom( valor => {
+        if(valor) throw new Error("No podés modificar el nivel por esta ruta");
+        return true;
+    }),
+    check("estado").custom( valor => {
+        if(typeof valor !== 'undefined') throw new Error("No podés modificar el estado en esta ruta");
+        return true;
+    }),
     validarCampos
 ], usuarioPut);
 
