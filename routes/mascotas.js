@@ -56,7 +56,6 @@ router.patch("/:id", [
     validarCampos
 ], habilitarMascota);
 
-
 router.delete("/:id", [
     validarJWT,
     esRolValido("ADMIN", "MEDICO"),

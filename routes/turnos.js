@@ -6,7 +6,6 @@ const { esRolValido } = require("../middlewares/validar-roles");
 const { turnoExiste } = require("../helpers/db-validator");
 const { turnosGet, turnoPost, turnoPut, turnoDelete, turnoPatch, turnosGetIdDueno, turnosGetMisTurnos } = require("../controllers/turnos");
 
-
 const router = Router();
 
 router.get("/",[

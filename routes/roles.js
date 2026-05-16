@@ -35,5 +35,4 @@ router.delete("/:id",[
     validarCampos
 ], rolDelete);
 
-
 module.exports = router

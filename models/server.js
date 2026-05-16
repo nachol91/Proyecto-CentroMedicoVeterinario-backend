@@ -10,8 +10,7 @@ class Server{
         this.mascotasPath = "/api/mascotas";
         this.usuariosPath = "/api/usuarios";
         this.rolesPath = "/api/roles";
-        this.turnosPath = "/api/turnos";
-        
+        this.turnosPath = "/api/turnos";        
         
         this.conectarDB();
 
