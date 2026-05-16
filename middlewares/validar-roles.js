@@ -18,7 +18,6 @@ const esAdminRole = ( req = request, res = response, next ) =>{
     next();
 };
 
-
 const esRolValido = (...niveles) => {
     return (req = request, res = response, next) =>{
         if(!req.usuario){
